@@ -27,22 +27,20 @@ function Signin() {
       body: JSON.stringify(user),
     })
     .then((resp) => {
-      if (resp.ok) {
-        return resp.json();
-      } else {
-        throw new Error('User not found');
-      }
-    })
-    .then((data) => {
-      console.log(data);
-      setUser(data);
-      // navigate(`/otp/${data.user.id}/${user.email}`);
-    })
-    .catch((error) => {
-      console.error('Error:', error);
-      // Handle user not found scenario (display a message, etc.)
-      alert('User not found');
-    });
+        if (resp.ok) {
+          return resp.json();
+        } else {
+          throw new Error('User not found');
+        }
+      })
+      .then((data) => {
+        console.log(data);
+        setUser(data);
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        alert('User not found');
+      });
   };
   return (
     <div>
