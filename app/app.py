@@ -16,9 +16,13 @@ class Login(Resource):
 
         parser.add_argument('email', type=str, required=True, help='Email is required')
         parser.add_argument('password', type=str, required=True, help='Password is required')
+        # parser.add_argument('role', type=str, required=True, help='role is required')
+
         args = parser.parse_args()
 
         user = User.query.filter_by(email=args['email']).first()
+        # user = User.query.filter_by(role=args['role']).first()
+
 
         if user and user.authenticate(args['password']):
             session["user_id"]=user.id

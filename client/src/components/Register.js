@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2'
+
 
 function Register() {
+  const navigate = useNavigate()
   const [user, setUser] = useState({
     full_name: '',
     username: '',
@@ -64,7 +67,15 @@ function Register() {
       body: JSON.stringify(user),
     })
       .then((resp) => resp.json())
-      .then((data) => console.log(data))
+      .then((data) => {
+        console.log(data)
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'You have successfully registered your account.'
+        })
+        navigate("/login")
+      })
       .catch((error) => console.error('Error:', error));
   };
 

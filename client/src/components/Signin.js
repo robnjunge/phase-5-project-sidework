@@ -2,11 +2,14 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import Swal from 'sweetalert2'
+
 
 function Signin() {
   const [user, setUser] = useState({
     email: '',
-    password: '',
+    role: '',
+    password: ''
   });
   const navigate = useNavigate()
   const handleChange = (e) => {
@@ -28,7 +31,7 @@ function Signin() {
     })
     .then((resp) => {
         if (resp.ok) {
-          return resp.json();
+          return (resp.json());
         } else {
           throw new Error('User not found');
         }
@@ -36,6 +39,27 @@ function Signin() {
       .then((data) => {
         console.log(data);
         setUser(data);
+        Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'You have successfully logged into your account.'
+        })
+        navigate("/hom")
+          // if (data.user.role) {
+          //     const userRole = data.user.role;
+      
+          //     if (userRole === 'Admin') {
+          //         navigate("/admin_dashboard");
+          //     } else if (userRole === 'procurement') {
+          //         navigate("/manager_dashboard");
+          //     } else if (userRole === 'Normal Employee') {
+          //         navigate("/user_dashboard");
+          //     }
+          // } else {
+          //     // Handle the case where the role is not present in the response
+          //     console.error('User role not found in the response.');
+          // }
+      
       })
       .catch((error) => {
         console.error('Error:', error);
@@ -86,10 +110,28 @@ function Signin() {
               >Email address
             </label>
           </div>
+{/* 
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="role">
+              Role
+            </label>
+            <select
+              value={user.role}
+              name='role'
+              onChange={handleChange}
+              className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            >
+              <option value="" disabled>Select Role</option>
+              <option value="Normal Employee">Employee</option>
+              <option value="Admin">Admin</option>
+              <option value="Procurement Manager">Procurement Manager</option>
+            </select>
+          </div> */}
 
           <div class="relative mb-6" data-te-input-wrapper-init>
             <input
               type="password"
+              name="password"
               class="peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[2.15] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 data-[te-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-neutral-200 dark:placeholder:text-neutral-200 [&:not([data-te-input-placeholder-active])]:placeholder:opacity-0"
               id="exampleFormControlInput22"
               onChange={handleChange}

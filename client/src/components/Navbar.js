@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
 function Navbar() {
-  const [navbar, setNavbar] = useState(false);
+  const [] = useState(false);
 
   return (
     <nav className="fixed w-full bg-amber-700 shadow z-40">
