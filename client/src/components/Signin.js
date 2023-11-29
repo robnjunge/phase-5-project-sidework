@@ -44,7 +44,7 @@ function Signin() {
           title: 'Success',
           text: 'You have successfully logged into your account.'
         })
-        navigate("/hom")
+        navigate("/home")
           // if (data.user.role) {
           //     const userRole = data.user.role;
       
@@ -63,7 +63,11 @@ function Signin() {
       })
       .catch((error) => {
         console.error('Error:', error);
-        alert('User not found');
+        Swal.fire({
+          icon: 'error',
+          title: 'error',
+          text: 'Incorrect Password'
+        })
       });
   };
   return (
