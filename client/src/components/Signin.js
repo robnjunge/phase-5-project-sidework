@@ -43,7 +43,7 @@ function Signin() {
           title: 'Success',
           text: 'You have successfully logged into your account.'
         })
-        navigate("/home")
+        navigate("/user_dashboard")
           // if (data.user.role) {
           //     const userRole = data.user.role;
       

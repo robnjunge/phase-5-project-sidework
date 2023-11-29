@@ -4,6 +4,8 @@ import Signin from './components/Signin';
 import Landing from './components/Landing';
 import NavBar from './components/Navbar';
 import About from './components/About';
+import UpdateRequest from './components/UpdateRequest';
+import AddRequest from './components/AddRequest';
 import Register from './components/Register';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
@@ -27,6 +29,8 @@ function App() {
         <Route path="/user_dashboard" element={<User />} />
         <Route path="/admin_dashboard" element={<Admin />} />
         <Route path="/manager_dashboard" element={<Manager />} />
+        <Route path="/update/:id" element={<UpdateRequest />} />
+        <Route path="/add_request" element={<AddRequest />} />
       </Routes>
       <Footer />
      
