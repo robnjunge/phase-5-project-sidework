@@ -43,7 +43,10 @@ function Signin() {
           title: 'Success',
           text: 'You have successfully logged into your account.'
         })
-        navigate("/user_dashboard")
+        .then(() => {
+          navigate('/home'); 
+        });
+        // navigate("/user_dashboard")
           // if (data.user.role) {
           //     const userRole = data.user.role;
       
@@ -69,6 +72,7 @@ function Signin() {
         })
       });
   };
+  
   return (
     <div>
       <section class="h-screen">

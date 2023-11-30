@@ -9,7 +9,8 @@ function Logout() {
       icon: 'success',
       title: 'Logged out',
       text: 'You have been successfully logged out.',
-    }).then(() => {
+    })
+    .then(() => {
       navigate('/login'); 
     });
   };
