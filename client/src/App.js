@@ -9,6 +9,7 @@ import AddRequest from './components/AddRequest';
 import Register from './components/Register';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import Logout from './components/Logout';
 import Admin from './components/dashboard/Admin';
 import User from './components/dashboard/User';
 import Manager from './components/dashboard/Manager';
@@ -26,6 +27,8 @@ function App() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
+        <Route path="/logout" element={<Logout />} />
+
         <Route path="/user_dashboard" element={<User />} />
         <Route path="/admin_dashboard" element={<Admin />} />
         <Route path="/manager_dashboard" element={<Manager />} />

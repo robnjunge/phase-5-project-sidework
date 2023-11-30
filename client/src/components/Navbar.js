@@ -42,6 +42,9 @@ function Navbar() {
           <div className="px-4 py-1 text-gray-800 bg-white rounded-md shadow hover:bg-gray-100">
             <Link to="/login">Login</Link>
           </div>
+          <div className="px-4 py-1 text-gray-800 bg-white rounded-md shadow hover:bg-gray-100">
+            <Link to="/logout">Logout</Link>
+          </div>
         </div>
       </div>
     </nav>
