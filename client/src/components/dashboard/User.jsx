@@ -48,12 +48,14 @@ function User() {
       </div>
 
       <div>
-        <input type="text" onChange={handleSearch} placeholder="Search Here ..." className="w-full px-2 py-2 border hover:bg-[#D0F4F6] border-blue rounded-lg hover::blue" />
+        <input type="text" onChange={handleSearch} placeholder="Search Here ..." className="w-full px-2 py-2 border hover:bg-[#D0F4F6] border-green rounded-lg hover::green" />
       </div>
       <br />
-      <h1 className="text-2xl py-4 font-bold mb-1 shadow shadow-gray-800 rounded-lg text-center text-3xl" style={{ background: 'linear-gradient(to right, #1572E8, #08489C)' }}>
+      <h1 className="text-2xl py-4 font-bold mb-1 shadow shadow-gray-800 rounded-lg text-center text-3xl" style={{ background: 'linear-gradient(to right, #e67e22, #d35400)' }}>
         Request Management
       </h1>
+
+
       <div className="overflow-x-auto">
         <table className="min-w-full">
           <thead className="bg-gray-200 font-bold">
@@ -154,15 +156,11 @@ function User() {
                     </Link>
                   </div>
 
-                    {/* <Link className="bg-red-500 text-black hover:bg-red-600 font-bold py-2 px-4 rounded"
-                    to={`/add-candidate/${request.id}`}
-                  >
-                    Add Request
-                  </Link> */}
                 </div>
               </td>
               </tr>
             ))}
+            
           </tbody>
         </table>
         <Link to={`/add_request`}>Add Request</Link>
