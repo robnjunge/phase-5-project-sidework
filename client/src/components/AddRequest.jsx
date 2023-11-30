@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function AddRequest() {
@@ -12,7 +12,6 @@ function AddRequest() {
     user_id: '',
     status: '',
   });
-
 
   const handleChange = (e) => {
     setRequests({
@@ -28,7 +27,6 @@ function AddRequest() {
       .then((resp) => {
         console.log(resp);
         navigate('/user_dashboard');
-        console.log(resp);
       })
       .catch((err) => console.log(err));
   }
@@ -39,7 +37,7 @@ function AddRequest() {
         <h1 className="mb-6 text-2xl font-bold text-center">Add Request</h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="student_name" className="block mb-1 text-sm">
+            <label htmlFor="asset_name" className="block mb-1 text-sm">
               Asset Name:
             </label>
             <input
@@ -48,6 +46,7 @@ function AddRequest() {
               onChange={handleChange}
               className="w-full px-3 py-2 border text-black rounded-lg focus:outline-none focus:ring focus:border-blue-300"
               value={requests.asset_name}
+              placeholder="Enter Asset Name"
               required
             />
           </div>
@@ -61,6 +60,7 @@ function AddRequest() {
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
               value={requests.description}
+              placeholder="Enter Description"
               required
             />
           </div>
@@ -74,6 +74,7 @@ function AddRequest() {
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
               value={requests.quantity}
+              placeholder="Enter Quantity"
               required
             />
           </div>
@@ -81,14 +82,18 @@ function AddRequest() {
             <label htmlFor="urgency" className="block mb-1 text-sm">
               Urgency:
             </label>
-            <input
-              type="text"
+            <select
               name="urgency"
               onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
               value={requests.urgency}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
               required
-            />
+            >
+              <option value="">Select Urgency</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
           </div>
           <div className="mb-4">
             <label htmlFor="user_id" className="block mb-1 text-sm">
@@ -100,6 +105,7 @@ function AddRequest() {
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
               value={requests.user_id}
+              placeholder="Enter User ID"
               required
             />
           </div>
@@ -113,6 +119,7 @@ function AddRequest() {
               onChange={handleChange}
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
               value={requests.status}
+              placeholder="Enter Status"
               required
             />
           </div>
