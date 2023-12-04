@@ -26,7 +26,7 @@ function AddRequest() {
       .post(`http://127.0.0.1:5555/requests`, requests)
       .then((resp) => {
         console.log(resp);
-        navigate('/user_dashboard');
+        navigate('/manager_dashboard');
       })
       .catch((err) => console.log(err));
   }
