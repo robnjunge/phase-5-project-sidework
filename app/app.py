@@ -3,17 +3,7 @@ from psycopg2 import IntegrityError
 from config import app,api,bcrypt,db
 from flask import make_response,jsonify,request,session
 from models import Asset, User, Assignment, Maintenance, Transaction, Requests
-from datetime import datetime
-
-from werkzeug.exceptions import NotFound
-
-app.secret_key='qwwerrtyyu123'
-
-@app.before_request
-def check_if_logged_in():
-    session.setdefault("user_id", None)
-    if not session["user_id"] and request.endpoint not in ['login', "check_session","logout","registration"]:
-        return {"error": "unauthorized"}, 401
+import datetime
 class Home(Resource):
     def get(self):
         response =make_response(jsonify({"message":"Welcome to Asset-Sync-Manager-Backend"}), 200)
@@ -33,10 +23,11 @@ class Login(Resource):
 
         if user and user.authenticate(args['password']):
             session["user_id"]=user.id
+            session["user_role"] = user.role
             return make_response(jsonify({'message': 'Login successful'}), 201)
         else:
             return make_response(jsonify({'error': 'Invalid username or password'}), 401)
-api.add_resource(Login,"/login",endpoint="login")
+api.add_resource(Login,"/login")
 class Registration(Resource):
    def post(self):
         parser = reqparse.RequestParser()
@@ -64,28 +55,13 @@ class Registration(Resource):
             db.session.add(new_user)
             db.session.commit()
             session["user_id"]=new_user.id
+            session["user_role"] = new_user.role
             return make_response(jsonify({'message': 'User registered successfully'}), 201)
         except IntegrityError:
             db.session.rollback()
             return make_response(jsonify({'error': 'Username or email already exists'}), 409)
 
-api.add_resource(Registration,"/registration",endpoint="registration")
-class CheckSession(Resource):
-    def get(self):
-        user = User.query.filter(User.id == session.get('user_id')).first()
-        if user:
-            return make_response(jsonify(user.to_dict()), 200)
-        else:
-            return make_response(jsonify({"error": "user not in session:please signin/login"}), 401)
-api.add_resource(CheckSession,'/check_session',endpoint='check_session' )
-class Logout(Resource):
-    def delete(self):
-        if session.get('user_id'):
-            session['user_id']=None
-            return {"message": "User logged out successfully"}
-        else:
-            return {"error":"User must be logged in to logout"}
-api.add_resource(Logout, '/logout', endpoint='logout')
+api.add_resource(Registration,"/registration")
 class PasswordUpdateResource(Resource):
     def put(self, user_id):
         parser = reqparse.RequestParser()
@@ -102,10 +78,10 @@ class PasswordUpdateResource(Resource):
         db.session.commit()
 
         return make_response(jsonify({'message': 'Password updated successfully'}), 200)
-api.add_resource(PasswordUpdateResource, '/update_password',endpoint="/update_password")
+api.add_resource(PasswordUpdateResource, '/user/<int:user_id>/update_password')
 class Assets(Resource):
     def get(self):
-        assets = [asset.to_dict() for asset in Asset.query.order_by(Asset.id).all()]
+        assets = [asset.to_dict() for asset in Asset.query.all()]
         response= make_response(jsonify(assets), 200)
         return response
     def post(self):
@@ -147,12 +123,12 @@ class AssetById(Resource):
         asset.model = data.get('model', asset.model)
         asset.image_url = data.get('image_url', asset.image_url)
         asset.manufacturer = data.get('manufacturer', asset.manufacturer)
-        asset.date_purchased = datetime.strptime(data.get('date_purchased', asset.date_purchased), '%Y-%m-%d').date() if data.get('date_purchased') else None
-        asset.added_on = datetime.strptime(data.get('added_on', asset.added_on), '%Y-%m-%d').date() if data.get('added_on') else None
+        asset.date_purchased = data.get('date_purchased', asset.date_purchased)
+        asset.date_purchased = data.get('added_on', asset.added_on)
         asset.purchase_cost=data.get("purchase_cost", asset.purchase_cost)
         asset.status = data.get('status', asset.status)
         asset.category = data.get('category', asset.category)
-        asset.serial_number=data.get('serial_number',asset.serial_number)
+        asset.serial_number=data.get('category',asset.serial_number)
 
         try:
             db.session.commit()
@@ -162,7 +138,7 @@ class AssetById(Resource):
             return make_response(jsonify({'error': str(e)}), 400)
 
     def delete(self, asset_id):
-        asset = Asset.query.filter_by(id=asset_id).first()
+        asset = Asset.query.get_or_404(asset_id)
 
         try:
             db.session.delete(asset)
@@ -172,7 +148,7 @@ class AssetById(Resource):
             db.session.rollback()
             return make_response(jsonify({'error': str(e)}), 400)
 
-api.add_resource(AssetById,'/asset/<int:asset_id>')
+api.add_resource(AssetById,'/assets/<int:asset_id>')
 class AssignmentResource(Resource):
     def get(self, assignment_id):
         assignment = Assignment.query.filter_by(id=assignment_id).first()
@@ -217,7 +193,7 @@ api.add_resource(AssignmentResource, '/assignment/<int:assignment_id>')
 
 class AssignmentListResource(Resource):
     def get(self):
-        assignments = [assignment.to_dict() for assignment in Assignment.query.order_by(Assignment.asset_id).all()]
+        assignments = [assignment.to_dict() for assignment in Assignment.query.all()]
         if not assignments:
             return make_response(jsonify({'message': 'Assignments not found'}, 404))
 
@@ -236,7 +212,7 @@ class AssignmentListResource(Resource):
             asset_id=args['asset_id'],
             user_id=args['user_id'],
             assignment_date=datetime.strptime(args['assignment_date'], '%Y-%m-%d').date() if args['assignment_date'] else None,
-            return_date= datetime.strptime(args['return_date'], '%Y-%m-%d').date() if args['return_date'] else None
+            return_date=datetime.strptime(args['return_date'], '%Y-%m-%d').date() if args['return_date'] else None
         )
 
         db.session.add(new_assignment)
@@ -325,7 +301,7 @@ class MaintenanceListResource(Resource):
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('asset_id', type=int, help='Asset ID', required=True)
-        parser.add_argument('date_of_maintenance', help='Date of maintenance')
+        parser.add_argument('date_of_maintenance', type=str, help='Date of maintenance', required=True)
         parser.add_argument('type', type=str, help='Maintenance type', required=True)
         parser.add_argument('description', type=str, help='Maintenance description')
         parser.add_argument("cost",required=True, help="Cost required")
@@ -335,7 +311,7 @@ class MaintenanceListResource(Resource):
 
         new_maintenance = Maintenance(
             asset_id=args['asset_id'],
-            date_of_maintenance=datetime.strptime(args['date_of_maintenance'], '%d/%m/%Y').date() if args['date_of_maintenance'] else None,
+            date_of_maintenance=datetime.strptime(args['date_of_maintenance'], '%Y-%m-%d').date(),
             type=args['type'],
             description=args['description']
         )
@@ -453,7 +429,7 @@ class RequestsResource(Resource):
 api.add_resource(RequestsResource, '/request/<int:request_id>')
 class RequestListResource(Resource):
     def get(self):
-        requests = Requests.query.order_by(Requests.request_id.desc()).all()
+        requests = Requests.query.all()
         serialized_requests = [request.to_dict() for request in requests]
         return make_response(jsonify(serialized_requests), 200)
     def post(self):
@@ -530,12 +506,5 @@ class UserProfileResource(Resource):
 
 api.add_resource(UserProfileResource, '/user/profile/<int:user_id>')
 
-@app.errorhandler(NotFound)
-def handle_not_found(e):
-    response = make_response(
-        "Not Found:The requested endpoint(resource) does not exist",
-        404
-        )
-    return response
 if __name__ == "__main__":
     app.run(debug=True,port=5555)
